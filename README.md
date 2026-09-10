@@ -9,24 +9,24 @@ A custom `mitmproxy` script to monitor enterprise AI prompt traffic, enforce for
 ## Installation
 
 1. Clone the repository:
-   ```bash
+   ```
    git clone https://github.com/auriete/AI-security-proxy
-   cd mitmproxy-security-proxy
+   cd AI-security-proxy
    ```
 
 2. Install dependencies:
-   ```bash
+   ```
    pip install -r requirements.txt
    ```
 
 ## Usage
 
 1. **Start the Admin Log Viewer:**
-   ```bash
+   ```
    python admin_sim.py
    ```
 
 2. **Start the Security Proxy:**
-   ```bash
-   mitmdump -s listener.py
+   ```
+   mitmdump -s .\listener.py -p 9090 -q
    ```
