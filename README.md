@@ -23,7 +23,7 @@ A custom `mitmproxy` script to monitor enterprise AI prompt traffic, enforce for
 
 1. **Start the Security Proxy:**
    ```
-   mitmdump -s .\listener.py -p 9090 -q
+   mitmdump -s .\listener.py -p 9091 -q
    ```
 
 2. **Start the Admin Log Viewer:**
