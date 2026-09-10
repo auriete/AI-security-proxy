@@ -21,7 +21,7 @@ A custom `mitmproxy` script to monitor enterprise AI prompt traffic, enforce for
 
 ## Usage
 
-1. **Replace the address in listener.py with the IP running admin_sim.py.**
+1. **Replace the address in admin_sim.py with the IP of the LAN device running listener.py.**
 
 1. **Start the Security Proxy:**
    ```
