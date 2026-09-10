@@ -21,12 +21,13 @@ A custom `mitmproxy` script to monitor enterprise AI prompt traffic, enforce for
 
 ## Usage
 
-1. **Start the Admin Log Viewer:**
+1. **Start the Security Proxy:**
+   ```
+   mitmdump -s .\listener.py -p 9090 -q
+   ```
+
+2. **Start the Admin Log Viewer:**
    ```
    python admin_sim.py
    ```
 
-2. **Start the Security Proxy:**
-   ```
-   mitmdump -s .\listener.py -p 9090 -q
-   ```
