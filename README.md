@@ -21,14 +21,14 @@ A custom `mitmproxy` script to monitor enterprise AI prompt traffic, enforce for
 
 ## Usage
 
-1. **Replace the address in admin_sim.py with the IP of the LAN device running listener.py.**
+1. **Configure your browser's proxy to connect to mitmdump.**
 
-1. **Start the Security Proxy:**
+2. **Start the Security Proxy:**
    ```
-   mitmdump -s .\listener.py -p 9091 -q
+   mitmdump -s .\listener.py -p (port) -q
    ```
 
-2. **Start the Admin Log Viewer (Works on both local device and other device on the same network):**
+3. **Start the Admin Log Viewer:**
    ```
    python admin_sim.py
    ```

@@ -18,7 +18,6 @@ BLOCKED_DOMAINS = [
     "copilot.com",
     "lmstudio.ai",
     "ollama.com"
-
 ]
 
 client_socket = None
@@ -94,9 +93,8 @@ def parse_chatgpt_payload(payload: dict) -> str | None:
                 content = msg.get("content", {})
                 if isinstance(content, dict):
                     parts = content.get("parts", [])
-                    text_parts = [str(p) for p in parts if isinstance(p, (str, int, float))]
-                    if text_parts:
-                        return " ".join(text_parts)
+                    if parts:
+                        return(parts[0])
                 elif isinstance(content, str):
                     return content
     except Exception:
@@ -132,6 +130,7 @@ def request(flow: http.HTTPFlow) -> None:
 
         print(alert_msg, flush=True)
         send_data(alert_msg)
+
         return  
 
     if flow.request.method not in ["POST", "PUT"]:
@@ -142,67 +141,52 @@ def request(flow: http.HTTPFlow) -> None:
         return
 
     raw_body = flow.request.get_text()
-    if not raw_body or raw_body.strip() == "next" or raw_body.startswith("gAAAAA"):
-        return
-
-    prompt_text = None
+    
     try:
-        payload = json.loads(raw_body)
-        prompt_text = parse_chatgpt_payload(payload)
-    except Exception:
+        data = json.loads(raw_body)
+    except:
         pass
 
-    if not prompt_text:
-        parts_match = re.search(r'"parts"\s*:\s*\[\s*"([^"]+)"\s*\]', raw_body)
-        if parts_match:
-            prompt_text = parts_match.group(1)
+    payload = str(parse_chatgpt_payload(data))
 
-    if prompt_text and prompt_text.strip() not in ["next", ""]:
-        try:
-            prompt_text = prompt_text.encode().decode('unicode_escape')
-        except Exception:
-            pass
+    blocked_kw = contains_forbidden_text(payload)
 
-        cleaned_prompt = prompt_text.strip()
-        blocked_kw = contains_forbidden_text(cleaned_prompt)
-
-        if blocked_kw:
-            user_info = extract_user_identity(flow)
-            
-            alert_msg = (
-                "\n" + "!" * 60 + "\n"
-                + "[PROMPT BLOCKED BY POLICY]\n"
-                + f"User Email    : {user_info['email']}\n"
-                + f"Target        : {host}\n"
-                + f"Prompt sent   : {prompt_text}\n"
-                + f"Matched Keyword: '{blocked_kw}'\n"
-                + "!" * 60 + "\n"
-            )
-            send_data(alert_msg)
-            print(alert_msg)
-
-            flow.response = http.Response.make(
-                403,
-                json.dumps({
-                    "error": {
-                        "message": "Request blocked: Your prompt has been detected to contain confidential information. As per company policy, this is strictly forbidden.",
-                        "type": "policy_violation_error",
-                        "code": "forbidden_content"
-                    }
-                }),
-                {"Content-Type": "application/json"}
-            )
-            return
-
+    if blocked_kw:
         user_info = extract_user_identity(flow)
-        result = (
-            "\n" + "=" * 60 + "\n"
-            + "[Normal user prompt]\n"
-            + f"User Email: {user_info['email']}\n"
-            + f"Target    : {host}\n"
-            + "-" * 60 + "\n"
-            + prompt_text.strip() + "\n"
-            + "=" * 60 + "\n"
+        
+        alert_msg = (
+            "\n" + "!" * 60 + "\n"
+            + "[PROMPT BLOCKED BY POLICY]\n"
+            + f"User Email    : {user_info['email']}\n"
+            + f"Target        : {host}\n"
+            + f"Prompt sent   : {payload}\n"
+            + f"Matched Keyword: '{blocked_kw}'\n"
+            + "!" * 60 + "\n"
         )
-        send_data(result)
+        send_data(alert_msg)
         print(alert_msg)
+
+        flow.response = http.Response.make(
+            403,
+            json.dumps({
+                "error": {
+                    "message": "Request blocked: Your prompt has been detected to contain confidential information. As per company policy, this is strictly forbidden.",
+                    "type": "policy_violation_error",
+                    "code": "forbidden_content"
+                }
+            }),
+            {"Content-Type": "application/json"}
+        )
+        return
+
+    user_info = extract_user_identity(flow)
+    result = (
+        "\n" + "=" * 60 + "\n"
+        + "[Normal user prompt]\n"
+        + f"User Email: {user_info['email']}\n"
+        + f"Target    : {host}\n"
+        + "-" * 60 + "\n"
+        + payload + "\n"
+        + "=" * 60 + "\n"
+    )
+    send_data(result)

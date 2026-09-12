@@ -1,7 +1,7 @@
 import socket
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect(("8.8.8.8", 9091)) # CHANGE IP 
+s.connect(("192.168.1.252", 9091))
 print("Connected to proxy log server.")
 
 buffer = ""
