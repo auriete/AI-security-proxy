@@ -1,6 +1,6 @@
 # Enterprise AI Traffic Proxy & Security Monitor
 
-A custom `mitmproxy` script to monitor enterprise AI prompt traffic, enforce forbidden keyword policies, block unapproved AI services, and stream alert logs to a socket receiver.
+A POC `mitmproxy` script to monitor enterprise AI prompt traffic, enforce forbidden keyword policies, block unapproved AI services, and stream alert logs to a socket receiver.
 
 ## Prerequisites
 
